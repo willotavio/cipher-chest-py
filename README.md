@@ -1,4 +1,4 @@
-# Enc-py
+# cipher_chest
 
 ### About the project
 
