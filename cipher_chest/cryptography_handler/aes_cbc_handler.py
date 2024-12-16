@@ -9,14 +9,14 @@ from cipher_chest.padder.pkcs7_padder import PKCS7Padder
 class AESCBCHandler(CryptographyHandler):
     def __init__(self):
         self.backend = default_backend()
-        self.padding_service = PKCS7Padder(algorithms.AES.block_size)
 
     def encrypt(self, plain_text: str, key: bytes, iv: bytes):
         try:
             cipher = Cipher(algorithms.AES(key), modes.CBC(iv), self.backend)
             encryptor = cipher.encryptor()
-
-            padded_plain_text = self.padding_service.pad(plain_text)
+            
+            padding_service = PKCS7Padder(algorithms.AES.block_size)
+            padded_plain_text = padding_service.pad(plain_text)
             
             cipher_text = encryptor.update(padded_plain_text) + encryptor.finalize()
 
@@ -38,7 +38,8 @@ class AESCBCHandler(CryptographyHandler):
 
             cipher_text = decryptor.update(cipher_text) + decryptor.finalize()
 
-            unpadded_cipher_text = self.padding_service.unpad(cipher_text)
+            padding_service = PKCS7Padder(algorithms.AES.block_size)
+            unpadded_cipher_text = padding_service.unpad(cipher_text)
 
             plain_text = unpadded_cipher_text.decode("utf-8")
 
